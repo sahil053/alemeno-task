@@ -13,18 +13,28 @@ class RegisterSerializer(serializers.ModelSerializer):
         fields = ["customer_id", "first_name", "last_name", "age", "monthly_salary", "phone_number"]
 
     def create(self, validated_data):
-        # Assuming customer_id is required and provided in the request
         customer_id = validated_data.get("customer_id")
+        first_name = validated_data.get("first_name")
+        last_name = validated_data.get("last_name")
+        age = validated_data.get("age")
+        monthly_salary = validated_data.get("monthly_salary")
+        phone_number = validated_data.get("phone_number")
+
+        # Assuming customer_id is required and provided in the request
         if not customer_id:
             raise serializers.ValidationError("customer_id is required")
-
-        # Pop customer_id from validated_data to avoid it being passed to the Customer constructor
-        validated_data.pop("customer_id")
 
         # Create or update the customer record
         customer, created = Customer.objects.update_or_create(
             customer_id=customer_id,
-            defaults=validated_data
+            defaults={
+                "first_name": first_name,
+                "last_name": last_name,
+                "age": age,
+                "monthly_salary": monthly_salary,
+                "phone_number": phone_number,
+                # Add other fields as needed
+            }
         )
 
         return customer
