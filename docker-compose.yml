@@ -1,0 +1,30 @@
+version: "3"
+
+services:
+  # Django web application
+  web:
+    build: .
+    command: sh -c "chmod +x entrypoint.sh && ./entrypoint.sh && python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgres://postgres:password@db:5432/mydatabase
+    links:
+      - db
+
+  # PostgreSQL database
+  db:
+    image: postgres
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
